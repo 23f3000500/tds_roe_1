@@ -2,7 +2,6 @@
 
 name: 'DevOps Challenge: Matrix Build'
 
-# Trigger the workflow on pushes to the main branch or manually
 on:
   push:
     branches: [ main ]
@@ -10,39 +9,26 @@ on:
 
 jobs:
   build:
-    # Use the OS from the matrix for each job's runner
     runs-on: ${{ matrix.os }}
-
     strategy:
-      # Define the build matrix
-      # This will create 3 parallel jobs, one for each OS
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-      # 1. Check out the repository code so the workflow can access it
       - name: Check out code
         uses: actions/checkout@v4
 
-      # 2. This step includes the required identifier and shows matrix info
-      - name: Display Matrix Info
-        id: matrix-d93f18b  # <-- Required Step Identifier
+      # 2. This step includes the required identifier in its name
+      - name: 'Display Matrix Info (matrix-d93f18b)' # <-- Identifier added here
         run: |
           echo "Starting build for OS: ${{ matrix.os }}"
           echo "This is a unique build step for this matrix job."
 
-      # 3. Generate a unique, non-empty artifact for this job
-      # We create a simple text file, but this could be a compiled binary
       - name: Generate build artifact
         run: echo "This is the build artifact for ${{ matrix.os }}" > build-output-${{ matrix.os }}.txt
 
-      # 4. Upload the artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          # Name the artifact with the required prefix and variant
-          # e.g., build-d93f18b-ubuntu-latest
           name: build-d93f18b-${{ matrix.os }}
-          
-          # Specify the file(s) to upload
           path: build-output-${{ matrix.os }}.txt
